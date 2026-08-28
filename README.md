@@ -1,89 +1,167 @@
 # Airbnb Vienna — NLP & Price Prediction
 
-Analyzing 612,000+ guest reviews from Vienna Airbnb listings using 
-NLP techniques — and building ML models to predict listing prices 
-based on property features, location, and guest sentiment.
+Using structured Airbnb listing data and guest review text to understand what drives price — and how review themes differ across market segments in Vienna.
 
 ## Overview
 
-Vienna hosts thousands of Airbnb listings with reviews in dozens of 
-languages. This project combines natural language processing and 
-supervised machine learning to understand what guests actually care 
-about — and what drives listing prices.
+This project combines natural language processing and supervised machine learning to answer two related questions:
 
-**Data:** Inside Airbnb (insideairbnb.com) — listings + reviews, Vienna, Austria (Sep 2025)  
-**Context:** Group project — SCH-MGMT 661, Isenberg School of Management
+1. How much predictive value does guest-review text add beyond traditional listing characteristics?
+2. How does the content of guest reviews differ across Airbnb price segments?
 
-## What's inside
+The analysis uses Airbnb listings and reviews from Vienna, Austria. Review text is transformed into sentiment and topic features, then combined with structural listing characteristics in a Ridge Regression model.
 
-**Data & preprocessing**
-- EDA on 14,123 listings and 612,430 reviews across 79 variables
-- Language detection — filtered to English-language reviews
-- Text normalization: tokenization, stopword removal, lemmatization
-- Multicollinearity analysis and feature reduction (23 → final clean set)
+**Data:** Inside Airbnb — Vienna, Austria, snapshot of September 14, 2025
 
-**NLP pipeline**
-- Bag-of-Words (BoW) and TF-IDF vectorization
-- Bigram and trigram extraction (top terms: "public transport", "walking distance")
-- Topic modeling: LDA (BoW), NMF (TF-IDF), LSA (TF-IDF) — 4 topics identified
-- Sentiment analysis: DistilBERT (avg. sentiment score per listing)
+**Origin:** Originally developed as a group project for SCH-MGMT 661 at Isenberg School of Management; substantially reworked, corrected, and extended independently for this portfolio.
 
-**Price prediction models**
-- Ridge Regression (sklearn)
-- Neural Network: 3 hidden layers, ReLU, dropout 0.2, early stopping (Keras)
-- Log transformation of target variable to handle price skew
+## Data
 
-## Results
+The project uses two Inside Airbnb datasets:
 
-**Topic modeling — NMF produced most distinct topics:**
+- `listings.csv.gz` — property characteristics, location, capacity, amenities, and price
+- `reviews.csv.gz` — guest review text
 
-| Topic | Label |
-|---|---|
-| Topic 1 | Location & Comfort |
-| Topic 2 | Host Quality & Service |
-| Topic 3 | Customer Satisfaction |
-| Topic 4 | Transport Accessibility |
+After language filtering and preprocessing, the review dataset contains approximately **319,000 English-language reviews**.
 
-Location & Comfort dominated at ~40% of overall topic distribution.
+The final modeling dataset contains **8,138 unique listings**, with each listing paired with the concatenated text of its 10 most recent reviews.
 
-**Price prediction:**
+## NLP pipeline
 
-| Model | RMSE (Log) | R² | RMSE ($) |
-|---|---|---|---|
-| Ridge Regression | 0.398 | 0.513 | $231.92 |
-| Neural Network | 0.363 | 0.594 | $216.19 |
+The text analysis includes:
 
-Neural Network outperformed Ridge on both metrics. Top price predictors: 
-bedrooms, estimated occupancy, accommodates, and Innere Stadt location.
+- English-language review filtering
+- Text cleaning and normalization
+- Bag-of-Words and TF-IDF vectorization
+- Bigram and trigram analysis
+- Topic modeling using:
+  - LDA
+  - NMF
+  - LSA
+- DistilBERT sentiment scoring
+- Listing-level aggregation of sentiment and review-topic features
+
+NMF produced the most interpretable topic structure.
+
+### Final NMF topics
+
+1. **Walkability & Local Amenities**
+2. **Property Condition / Issues**
+3. **Transport & Accessibility**
+4. **Host & Hospitality**
+
+## Price prediction
+
+The final predictive analysis compares:
+
+- **Median baseline**
+- **Ridge Regression using structural listing features**
+- **Ridge Regression using structural + NLP features**
+
+The target variable is log-transformed price.
+
+| Model | R² (log price) | MAE | Median AE |
+|---|---:|---:|---:|
+| Median baseline | — | $80.06 | $30.00 |
+| Structural features only | 0.381 | $66.83 | $21.33 |
+| Structural + NLP features | **0.410** | **$65.84** | $21.48 |
+
+Adding NLP features increased R² by approximately **0.03** and reduced mean absolute error by approximately **$0.99**.
+
+The improvement is real but modest: structural characteristics remain the main source of predictive power, while review text contributes additional information about market positioning and guest experience.
+
+## What drives price?
+
+The strongest Ridge coefficients include:
+
+- Entire rental unit property type
+- Number of guests accommodated
+- Number of bedrooms
+- Serviced apartment property type
+- Innere Stadt location
+
+Among the NLP features, **Transport & Accessibility** has one of the largest coefficients in magnitude.
+
+Because the model is observational, these relationships should be interpreted as associations rather than causal effects.
+
+## Price segments & review themes
+
+Listings were divided into five business-oriented price segments:
+
+- **Budget:** up to $75
+- **Standard:** $76–125
+- **Premium:** $126–200
+- **High-end:** $201–500
+- **Luxury:** above $500
+
+Review-topic emphasis changes noticeably across these segments.
+
+Budget listings show above-average emphasis on **Transport & Accessibility**, while Premium and High-end listings show stronger emphasis on **Host & Hospitality**.
+
+For example:
+
+- Budget transport-topic index: **123.9**
+- High-end transport-topic index: **57.3**
+- High-end hospitality-topic index: **141.3**
+
+An index of 100 represents the overall dataset average.
+
+Dominant-topic analysis shows a similar pattern: Transport & Accessibility is the most frequent dominant topic among Budget listings, while hospitality becomes more prominent in higher-priced segments.
+
+## Statistical testing
+
+I used the **Kruskal–Wallis test** to test whether review-topic distributions differed across price segments.
+
+All four topics showed statistically significant differences after Holm correction for multiple testing:
+
+| Topic | H statistic |
+|---|---:|
+| Walkability & Local Amenities | 173.82 |
+| Property Condition / Issues | 55.45 |
+| Transport & Accessibility | 786.64 |
+| Host & Hospitality | 288.76 |
+
+Holm-adjusted p-values were below 0.001 for all four topics.
+
+Transport & Accessibility showed the strongest difference across price segments.
 
 ## Key findings
 
-- Listing capacity (bedrooms, accommodates) is the single strongest 
-  driver of price
-- Innere Stadt commands a significant price premium over all other districts
-- Sentiment scores correlated 0.51 with review ratings — but had limited 
-  direct impact on price
-- Both models underpredict high-priced listings (>$300) — unexplained 
-  variance likely driven by interior quality, host reputation, and 
-  seasonal demand
+- Structural listing characteristics explain substantially more price variation than review-derived NLP features.
+- Guest-review text still adds incremental predictive information.
+- Listing capacity and property type are among the strongest price predictors.
+- Review content changes systematically across market segments.
+- Transport-related content is much more prominent among lower-priced listings.
+- Hospitality-related content becomes more prominent in Premium and High-end listings.
+- Review text appears more useful for understanding positioning and guest experience than for dramatically improving price prediction.
 
-## Tech stack
+## Methodological note
 
-Python · scikit-learn · Keras · pandas · NLTK · DistilBERT (HuggingFace) 
-· matplotlib · seaborn · TF-IDF · CountVectorizer
+An earlier version of the project merged listings with individual reviews before the train/test split. This duplicated listings across observations and allowed the same listing characteristics to appear in both training and test data, artificially inflating R² to approximately 0.62.
 
-## My contribution
+The pipeline was corrected to aggregate review text to **one row per listing before modeling**. The final out-of-sample R² is approximately **0.41**.
 
-- Cleaned and preprocessed large-scale review dataset (612K+ rows)
-- Built full NLP pipeline: tokenization, vectorization (BoW, TF-IDF, n-grams)
-- Conducted topic modeling using LDA, NMF, and LSA
-- Performed DistilBERT sentiment analysis and assigned scores per listing
-- Applied permutation importance to neural network to identify top features
+I kept this correction documented because identifying and fixing the leakage issue was an important part of the analytical process.
 
-## Authors
+## Limitations
 
-Olga Nureeva · Avanthikaa Kumaraguru · Vivek Vikram Singh · Alexander McDonough  
-MS Business Analytics, Isenberg School of Management, UMass Amherst  
-Course: SCH-MGMT 661
+- The analysis covers one city and one snapshot in time.
+- Airbnb prices may also be influenced by seasonality, events, host pricing strategy, and other market conditions not included here.
+- Topic models simplify complex text into a small number of latent themes.
+- The relationships identified are associative, not causal.
+- TF-IDF and topic extraction were performed before the predictive train/test split. A stricter ML pipeline would fit these transformations on training data only.
 
-[LinkedIn](https://www.linkedin.com/in/olga-nureeva) · [GitHub Portfolio](https://github.com/onureeva)
+## Repository structure
+
+```text
+airbnb-vienna-nlp-pricing/
+│
+├── data/
+│   ├── cleaned_reviews.csv.gz
+│   └── listing_sentiment.csv
+│
+├── notebooks/
+│   ├── 01_reviews_preprocessing.ipynb
+│   └── 02_airbnb_analysis.ipynb
+│
+└── README.md
