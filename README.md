@@ -2,6 +2,12 @@
 
 Using structured Airbnb listing data and guest review text to understand what drives price — and how review themes differ across market segments in Vienna.
 
+## Interactive Tableau Story
+
+Explore the findings and use the interactive Listing Strategy Calculator:
+
+[View the interactive Tableau Story](https://public.tableau.com/app/profile/olga.nureeva/viz/ViennaAirbnbFromReviewstoStrategy/Story1)
+
 ## Overview
 
 This project combines natural language processing and supervised machine learning to answer two related questions:
@@ -19,80 +25,81 @@ The analysis uses Airbnb listings and reviews from Vienna, Austria. Review text 
 
 The project uses two Inside Airbnb datasets:
 
-- `listings.csv.gz` — property characteristics, location, capacity, amenities, and price
-- `reviews.csv.gz` — guest review text
+* `listings.csv.gz` — property characteristics, location, capacity, amenities, and price
+* `reviews.csv.gz` — guest review text
 
 After language filtering and preprocessing, the review dataset contains approximately **319,000 English-language reviews**.
 
 The final modeling dataset contains **8,138 unique listings**, with each listing paired with the concatenated text of its 10 most recent reviews.
 
-## NLP pipeline
+## NLP Pipeline
 
 The text analysis includes:
 
-- English-language review filtering
-- Text cleaning and normalization
-- Bag-of-Words and TF-IDF vectorization
-- Bigram and trigram analysis
-- Topic modeling using:
-  - LDA
-  - NMF
-  - LSA
-- DistilBERT sentiment scoring
-- Listing-level aggregation of sentiment and review-topic features
+* English-language review filtering
+* Text cleaning and normalization
+* Bag-of-Words and TF-IDF vectorization
+* Bigram and trigram analysis
+* Topic modeling using:
+
+  * LDA
+  * NMF
+  * LSA
+* DistilBERT sentiment scoring
+* Listing-level aggregation of sentiment and review-topic features
 
 NMF produced the most interpretable topic structure.
 
-### Final NMF topics
+### Final NMF Topics
 
 1. **Walkability & Local Amenities**
 2. **Property Condition / Issues**
 3. **Transport & Accessibility**
 4. **Host & Hospitality**
 
-## Price prediction
+## Price Prediction
 
 The final predictive analysis compares:
 
-- **Median baseline**
-- **Ridge Regression using structural listing features**
-- **Ridge Regression using structural + NLP features**
+* **Median baseline**
+* **Ridge Regression using structural listing features**
+* **Ridge Regression using structural + NLP features**
 
 The target variable is log-transformed price.
 
-| Model | R² (log price) | MAE | Median AE |
-|---|---:|---:|---:|
-| Median baseline | — | $80.06 | $30.00 |
-| Structural features only | 0.381 | $66.83 | $21.33 |
-| Structural + NLP features | **0.410** | **$65.84** | $21.48 |
+| Model                     | R² (log price) |        MAE | Median AE |
+| ------------------------- | -------------: | ---------: | --------: |
+| Median baseline           |              — |     $80.06 |    $30.00 |
+| Structural features only  |          0.381 |     $66.83 |    $21.33 |
+| Structural + NLP features |      **0.410** | **$65.84** |    $21.48 |
 
 Adding NLP features increased R² by approximately **0.03** and reduced mean absolute error by approximately **$0.99**.
 
 The improvement is real but modest: structural characteristics remain the main source of predictive power, while review text contributes additional information about market positioning and guest experience.
 
-## What drives price?
+## What Drives Price?
 
 The strongest Ridge coefficients include:
 
-- Entire rental unit property type
-- Number of guests accommodated
-- Number of bedrooms
-- Serviced apartment property type
-- Innere Stadt location
+* Entire rental unit property type
+* Number of guests accommodated
+* Number of bedrooms
+* Serviced apartment property type
+* Innere Stadt location
 
 Among the NLP features, **Transport & Accessibility** has one of the largest coefficients in magnitude.
 
 Because the model is observational, these relationships should be interpreted as associations rather than causal effects.
 
-## Price segments & review themes
+## Price Segments & Review Themes
 
 Listings were divided into five business-oriented price segments:
 
-- **Budget:** up to $75
-- **Standard:** $76–125
-- **Premium:** $126–200
-- **High-end:** $201–500
-- **Luxury:** above $500
+* **Budget:** up to $75
+* **Standard:** $76–125
+* **Premium:** $126–200
+* **High-end:** $201–500
+* **Luxury:** above $500
 
 Review-topic emphasis changes noticeably across these segments.
 
@@ -100,42 +107,42 @@ Budget listings show above-average emphasis on **Transport & Accessibility**, wh
 
 For example:
 
-- Budget transport-topic index: **123.9**
-- High-end transport-topic index: **57.3**
-- High-end hospitality-topic index: **141.3**
+* Budget transport-topic index: **123.9**
+* High-end transport-topic index: **57.3**
+* High-end hospitality-topic index: **141.3**
 
 An index of 100 represents the overall dataset average.
 
 Dominant-topic analysis shows a similar pattern: Transport & Accessibility is the most frequent dominant topic among Budget listings, while hospitality becomes more prominent in higher-priced segments.
 
-## Statistical testing
+## Statistical Testing
 
 I used the **Kruskal–Wallis test** to test whether review-topic distributions differed across price segments.
 
 All four topics showed statistically significant differences after Holm correction for multiple testing:
 
-| Topic | H statistic |
-|---|---:|
-| Walkability & Local Amenities | 173.82 |
-| Property Condition / Issues | 55.45 |
-| Transport & Accessibility | 786.64 |
-| Host & Hospitality | 288.76 |
+| Topic                         | H statistic |
+| ----------------------------- | ----------: |
+| Walkability & Local Amenities |      173.82 |
+| Property Condition / Issues   |       55.45 |
+| Transport & Accessibility     |      786.64 |
+| Host & Hospitality            |      288.76 |
 
 Holm-adjusted p-values were below 0.001 for all four topics.
 
 Transport & Accessibility showed the strongest difference across price segments.
 
-## Key findings
+## Key Findings
 
-- Structural listing characteristics explain substantially more price variation than review-derived NLP features.
-- Guest-review text still adds incremental predictive information.
-- Listing capacity and property type are among the strongest price predictors.
-- Review content changes systematically across market segments.
-- Transport-related content is much more prominent among lower-priced listings.
-- Hospitality-related content becomes more prominent in Premium and High-end listings.
-- Review text appears more useful for understanding positioning and guest experience than for dramatically improving price prediction.
+* Structural listing characteristics explain substantially more price variation than review-derived NLP features.
+* Guest-review text still adds incremental predictive information.
+* Listing capacity and property type are among the strongest price predictors.
+* Review content changes systematically across market segments.
+* Transport-related content is much more prominent among lower-priced listings.
+* Hospitality-related content becomes more prominent in Premium and High-end listings.
+* Review text appears more useful for understanding positioning and guest experience than for dramatically improving price prediction.
 
-## Methodological note
+## Methodological Note
 
 An earlier version of the project merged listings with individual reviews before the train/test split. This duplicated listings across observations and allowed the same listing characteristics to appear in both training and test data, artificially inflating R² to approximately 0.62.
 
@@ -145,13 +152,13 @@ I kept this correction documented because identifying and fixing the leakage iss
 
 ## Limitations
 
-- The analysis covers one city and one snapshot in time.
-- Airbnb prices may also be influenced by seasonality, events, host pricing strategy, and other market conditions not included here.
-- Topic models simplify complex text into a small number of latent themes.
-- The relationships identified are associative, not causal.
-- TF-IDF and topic extraction were performed before the predictive train/test split. A stricter ML pipeline would fit these transformations on training data only.
+* The analysis covers one city and one snapshot in time.
+* Airbnb prices may also be influenced by seasonality, events, host pricing strategy, and other market conditions not included here.
+* Topic models simplify complex text into a small number of latent themes.
+* The relationships identified are associative, not causal.
+* TF-IDF and topic extraction were performed before the predictive train/test split. A stricter ML pipeline would fit these transformations on training data only.
 
-## Repository structure
+## Repository Structure
 
 ```text
 airbnb-vienna-nlp-pricing/
@@ -165,3 +172,4 @@ airbnb-vienna-nlp-pricing/
 │   └── 02_airbnb_analysis.ipynb
 │
 └── README.md
+```
