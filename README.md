@@ -53,7 +53,7 @@ NMF produced the most interpretable topic structure.
 ### Final NMF Topics
 
 1. **Walkability & Local Amenities**
-2. **Property Condition / Issues**
+2. **Property Condition**
 3. **Transport & Accessibility**
 4. **Host & Hospitality**
 
@@ -69,11 +69,11 @@ The target variable is log-transformed price.
 
 | Model                     | R² (log price) |        MAE | Median AE |
 | ------------------------- | -------------: | ---------: | --------: |
-| Median baseline           |              — |     $80.06 |    $30.00 |
-| Structural features only  |          0.381 |     $66.83 |    $21.33 |
-| Structural + NLP features |      **0.410** | **$65.84** |    $21.48 |
+| Median baseline           |              — |     €80.06 |    €30.00 |
+| Structural features only  |          0.381 |     €66.83 |    €21.33 |
+| Structural + NLP features |      **0.410** | **€65.84** |    €21.48 |
 
-Adding NLP features increased R² by approximately **0.03** and reduced mean absolute error by approximately **$0.99**.
+Adding NLP features increased R² by approximately **0.03** and reduced mean absolute error by approximately **€0.99**.
 
 The improvement is real but modest: structural characteristics remain the main source of predictive power, while review text contributes additional information about market positioning and guest experience.
 
@@ -95,11 +95,11 @@ Because the model is observational, these relationships should be interpreted as
 
 Listings were divided into five business-oriented price segments:
 
-* **Budget:** up to $75
-* **Standard:** $76–125
-* **Premium:** $126–200
-* **High-end:** $201–500
-* **Luxury:** above $500
+* **Budget:** up to €75
+* **Standard:** €76–125
+* **Premium:** €126–200
+* **High-end:** €201–500
+* **Luxury:** above €500
 
 Review-topic emphasis changes noticeably across these segments.
 
@@ -121,12 +121,12 @@ I used the **Kruskal–Wallis test** to test whether review-topic distributions 
 
 All four topics showed statistically significant differences after Holm correction for multiple testing:
 
-| Topic                         | H statistic |
-| ----------------------------- | ----------: |
-| Walkability & Local Amenities |      173.82 |
-| Property Condition / Issues   |       55.45 |
-| Transport & Accessibility     |      786.64 |
-| Host & Hospitality            |      288.76 |
+| Topic                          | H statistic |
+| ------------------------------ | ----------: |
+| Walkability & Local Amenities  |      173.82 |
+| Property Condition             |       55.45 |
+| Transport & Accessibility      |      786.64 |
+| Host & Hospitality             |      288.76 |
 
 Holm-adjusted p-values were below 0.001 for all four topics.
 
@@ -137,6 +137,7 @@ Transport & Accessibility showed the strongest difference across price segments.
 * Structural listing characteristics explain substantially more price variation than review-derived NLP features.
 * Guest-review text still adds incremental predictive information.
 * Listing capacity and property type are among the strongest price predictors.
+* Innere Stadt commands a significant price premium over every other district (€191 median vs. €118 for the next-highest district).
 * Review content changes systematically across market segments.
 * Transport-related content is much more prominent among lower-priced listings.
 * Hospitality-related content becomes more prominent in Premium and High-end listings.
@@ -157,6 +158,15 @@ I kept this correction documented because identifying and fixing the leakage iss
 * Topic models simplify complex text into a small number of latent themes.
 * The relationships identified are associative, not causal.
 * TF-IDF and topic extraction were performed before the predictive train/test split. A stricter ML pipeline would fit these transformations on training data only.
+* Review-based insights reflect only guests who left reviews and may not represent all stays.
+* Some listing segments have small comparable samples, which can make topic indexes less stable.
+
+## How to Run
+
+* Python 3.10+, dependencies listed in `requirements.txt`.
+* `listings.csv.gz` and `reviews.csv.gz` download directly from [Inside Airbnb](https://insideairbnb.com/get-the-data/) inside the notebooks — no manual download needed.
+* Cached intermediate outputs are included in `data/`: `cleaned_reviews.csv.gz` (preprocessed review text) and `listing_sentiment.csv` (DistilBERT sentiment scores). Sentiment scoring is the only expensive step, so it's cached; the code that produced it is preserved and documented in `02_airbnb_analysis.ipynb`.
+* Run `01_reviews_preprocessing.ipynb` first, then `02_airbnb_analysis.ipynb` top to bottom.
 
 ## Repository Structure
 
@@ -171,5 +181,17 @@ airbnb-vienna-nlp-pricing/
 │   ├── 01_reviews_preprocessing.ipynb
 │   └── 02_airbnb_analysis.ipynb
 │
+├── requirements.txt
 └── README.md
 ```
+
+## Tech Stack
+
+Python · scikit-learn · pandas · NLTK · DistilBERT (HuggingFace) · matplotlib · seaborn · TF-IDF · CountVectorizer
+
+## Author
+
+Olga Nureeva
+MS Business Analytics, Isenberg School of Management, UMass Amherst
+
+[LinkedIn](https://www.linkedin.com/in/olga-nureeva) · [GitHub Portfolio](https://github.com/onureeva)
