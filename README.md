@@ -8,6 +8,26 @@ Explore the findings and use the interactive Listing Strategy Calculator:
 
 [View the interactive Tableau Story](https://public.tableau.com/app/profile/olga.nureeva/viz/ViennaAirbnbFromReviewstoStrategy/Story1)
 
+### Dashboard Previews
+
+#### Predictive Signal
+
+Review-derived NLP features modestly improve price prediction beyond listing and location characteristics.
+
+![Predictive Signal dashboard](images/Predictive_signal.png)
+
+#### Market Insights
+
+Guest-review priorities vary across price segments, while district-level prices provide important market context.
+
+![Market Insights dashboard](images/Market_insights.png)
+
+#### Listing Strategy Calculator
+
+The interactive calculator compares review-theme patterns by price segment, neighbourhood, and room type.
+
+![Listing Strategy Calculator](images/Strategy_Calculator.png)
+
 ## Overview
 
 This project combines natural language processing and supervised machine learning to answer two related questions:
