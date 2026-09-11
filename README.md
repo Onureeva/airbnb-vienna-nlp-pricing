@@ -81,9 +81,9 @@ NMF produced the most interpretable topic structure.
 
 The final predictive analysis compares:
 
-* **Median baseline**
-* **Ridge Regression using structural listing features**
-* **Ridge Regression using structural + NLP features**
+* **Median-price baseline**
+* **Listing+location features**
+* **Listing+location+NLP**
 
 The target variable is log-transformed price.
 
@@ -95,7 +95,7 @@ The target variable is log-transformed price.
 
 Adding NLP features increased R² by approximately **0.03** and reduced mean absolute error by approximately **€0.99**.
 
-The improvement is real but modest: structural characteristics remain the main source of predictive power, while review text contributes additional information about market positioning and guest experience.
+The observed improvement is modest: structural characteristics remain the main source of predictive power, while review text contributes additional information about market positioning and guest experience.
 
 ## What Drives Price?
 
@@ -157,7 +157,7 @@ Transport & Accessibility showed the strongest difference across price segments.
 * Structural listing characteristics explain substantially more price variation than review-derived NLP features.
 * Guest-review text still adds incremental predictive information.
 * Listing capacity and property type are among the strongest price predictors.
-* Innere Stadt commands a significant price premium over every other district (€191 median vs. €118 for the next-highest district).
+* Innere Stadt has the highest median price (191 Euro vs. 118 Euro for the next-highest district).
 * Review content changes systematically across market segments.
 * Transport-related content is much more prominent among lower-priced listings.
 * Hospitality-related content becomes more prominent in Premium and High-end listings.
@@ -196,7 +196,11 @@ airbnb-vienna-nlp-pricing/
 ├── data/
 │   ├── cleaned_reviews.csv.gz
 │   └── listing_sentiment.csv
-│
+├──images/
+│   ├──Predictive_signal.png
+|   ├──Market_insights.png
+|   ├──Strategy_Calculator.png
+| 
 ├── notebooks/
 │   ├── 01_reviews_preprocessing.ipynb
 │   └── 02_airbnb_analysis.ipynb
@@ -207,7 +211,7 @@ airbnb-vienna-nlp-pricing/
 
 ## Tech Stack
 
-Python · scikit-learn · pandas · NLTK · DistilBERT (HuggingFace) · matplotlib · seaborn · TF-IDF · CountVectorizer
+Python · scikit-learn · pandas · NLTK · DistilBERT (HuggingFace) · matplotlib · seaborn · TF-IDF · CountVectorizer · Tableau
 
 ## Author
 
