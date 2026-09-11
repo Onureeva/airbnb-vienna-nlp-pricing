@@ -82,16 +82,16 @@ NMF produced the most interpretable topic structure.
 The final predictive analysis compares:
 
 * **Median-price baseline**
-* **Listing+location features**
-* **Listing+location+NLP**
+* **Listing + location features**
+* **Listing + location + NLP**
 
 The target variable is log-transformed price.
 
-| Model                     | R² (log price) |        MAE | Median AE |
-| ------------------------- | -------------: | ---------: | --------: |
-| Median baseline           |              — |     €80.06 |    €30.00 |
-| Structural features only  |          0.381 |     €66.83 |    €21.33 |
-| Structural + NLP features |      **0.410** | **€65.84** |    €21.48 |
+| Model                         | R² (log price) |        MAE | Median AE |
+| ------------------------------| -------------: | ---------: | --------: |
+| Median- price baseline        |              — |     €80.06 |    €30.00 |
+| Listing + location features   |          0.381 |     €66.83 |    €21.33 |
+| Listing + location + NLP      |      **0.410** | **€65.84** |    €21.48 |
 
 Adding NLP features increased R² by approximately **0.03** and reduced mean absolute error by approximately **€0.99**.
 
